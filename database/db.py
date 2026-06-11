@@ -71,6 +71,12 @@ class ConnectionWrapper:
 
 def get_db():
     """Returns a connection to the Turso database or local SQLite using libsql-client."""
+    test_db_path = os.environ.get("SPENDLY_DB_PATH")
+    if test_db_path:
+        uri_path = test_db_path.replace('\\', '/')
+        client = libsql_client.create_client_sync(f"file:{uri_path}")
+        return ConnectionWrapper(client)
+
     db_url = os.environ.get("TURSO_DATABASE_URL")
     auth_token = os.environ.get("TURSO_AUTH_TOKEN")
     

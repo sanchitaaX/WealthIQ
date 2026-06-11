@@ -10,9 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     datasets: [{
                         data: categoryDataRaw.map(d => d.total),
                         backgroundColor: [
-                            '#2C5CFF', '#C9940E', '#1A8C52', '#525252', '#8C8C8C', '#E8E8E4', '#F0EFEC'
+                            '#5235EF', // Primary Indigo
+                            '#8771FF', // Lavender/Light Purple
+                            '#FF9F1C', // Accent Gold
+                            '#10B981', // Emerald Green
+                            '#EF4444', // Coral Red
+                            '#3B82F6', // Blue
+                            '#64748B'  // Slate
                         ],
-                        borderWidth: 0,
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF',
                         hoverOffset: 6
                     }]
                 },
@@ -23,23 +30,34 @@ document.addEventListener("DOMContentLoaded", () => {
                         legend: { 
                             position: 'right',
                             labels: {
-                                font: { family: "'Inter', sans-serif" },
-                                color: '#525252'
+                                font: { 
+                                    family: "'Inter', sans-serif",
+                                    weight: '600',
+                                    size: 11
+                                },
+                                color: '#5C5E66',
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                padding: 15
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#171717',
-                            bodyColor: '#525252',
-                            borderColor: '#E8E8E4',
+                            backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                            titleColor: '#101011',
+                            titleFont: { family: "'Inter', sans-serif", weight: '700' },
+                            bodyColor: '#5C5E66',
+                            bodyFont: { family: "'Inter', sans-serif" },
+                            borderColor: '#E2E5EC',
                             borderWidth: 1,
                             padding: 12,
-                            boxPadding: 4,
+                            boxPadding: 6,
                             usePointStyle: true,
-                            cornerRadius: 8
+                            cornerRadius: 12,
+                            shadowColor: 'rgba(16, 16, 17, 0.08)',
+                            shadowBlur: 10
                         }
                     },
-                    cutout: '75%'
+                    cutout: '72%'
                 }
             });
         }

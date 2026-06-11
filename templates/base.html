@@ -32,6 +32,7 @@
     {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+    <div class="ambient-background-glow"></div>
 
     {% if g.user and request.endpoint not in ['landing', 'login', 'register'] %}
     <div class="wrapper">

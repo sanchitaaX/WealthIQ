@@ -7,23 +7,23 @@
 {% block no_sidebar_content %}
 
 <div class="auth-container">
-    <div class="card auth-card shadow-lg border-0" style="background: var(--surface);">
-        <a href="{{ url_for('landing') }}" class="brand text-decoration-none d-block mb-4 text-center">
+    <div class="card auth-card shadow-lg border-0 scroll-reveal" style="background: var(--surface);">
+        <a href="{{ url_for('landing') }}" class="brand text-decoration-none d-block mb-4 text-center scroll-reveal" data-delay="1">
             <i class="fa-solid fa-chart-line me-2"></i>WealthIQ
         </a>
-        
-        <div class="text-center mb-4">
+
+        <div class="text-center mb-4 scroll-reveal" data-delay="2">
             <h1 style="font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px;">Create your account</h1>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Start building better financial habits today</p>
         </div>
 
         {% if error %}
-        <div class="alert alert-danger py-2 px-3 text-center mb-4" style="font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--danger-subtle); background: var(--danger-subtle); color: var(--danger);">
+        <div class="alert alert-danger py-2 px-3 text-center mb-4 scroll-reveal" data-delay="3" style="font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--danger-subtle); background: var(--danger-subtle); color: var(--danger);">
             {{ error }}
         </div>
         {% endif %}
 
-        <form method="POST" action="/register">
+        <form method="POST" action="/register" class="scroll-reveal" data-delay="3">
             <div class="mb-3">
                 <label for="name" class="form-label">Full name</label>
                 <input type="text" id="name" name="name"
@@ -45,11 +45,34 @@
             <button type="submit" class="btn btn-primary w-100 py-2">Create account</button>
         </form>
 
-        <p class="text-center mt-4 mb-0" style="font-size: 0.85rem; color: var(--text-secondary);">
+        <p class="text-center mt-4 mb-0 scroll-reveal" data-delay="4" style="font-size: 0.85rem; color: var(--text-secondary);">
             Already have an account?
             <a href="{{ url_for('login') }}" style="font-weight: 600;">Sign in</a>
         </p>
     </div>
 </div>
+
+<script>
+(function () {
+  var EASING = 'cubic-bezier(0.6, -0.05, 0.01, 0.99)';
+  var DELAYS = { '0':'0s', '1':'0.10s', '2':'0.22s', '3':'0.36s', '4':'0.50s' };
+  document.querySelectorAll('.scroll-reveal').forEach(function (el) {
+    var d = DELAYS[el.dataset.delay] || '0s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    el.style.transition = 'opacity 0.65s ' + EASING + ' ' + d + ', transform 0.65s ' + EASING + ' ' + d;
+  });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.scroll-reveal').forEach(function (el) { observer.observe(el); });
+})();
+</script>
 
 {% endblock %}

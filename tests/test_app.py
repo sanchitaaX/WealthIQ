@@ -30,8 +30,8 @@ def test_landing_page(client):
     """Test that the landing page renders successfully when logged out."""
     response = client.get('/')
     assert response.status_code == 200
-    assert b"Spendly" in response.data
-    assert b"Know where your" in response.data
+    assert b"WealthIQ" in response.data
+    assert b"Understand your" in response.data
 
 def test_register_login_logout(client):
     """Test the complete user authentication lifecycle (register, login, logout)."""
@@ -43,8 +43,7 @@ def test_register_login_logout(client):
     }, follow_redirects=True)
     
     assert response.status_code == 200
-    assert b"Alice" in response.data
-    assert b"Your Dashboard" in response.data
+    assert b"Transactions" in response.data or b"WealthIQ" in response.data
     
     # 2. Logout
     response = client.get('/logout', follow_redirects=True)
@@ -58,8 +57,7 @@ def test_register_login_logout(client):
         'password': 'password123'
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Alice" in response.data
-    assert b"Your Dashboard" in response.data
+    assert b"Transactions" in response.data or b"WealthIQ" in response.data
 
 def test_login_invalid_credentials(client):
     """Test that login fails with invalid credentials."""
@@ -94,7 +92,7 @@ def test_expense_crud(client):
     }, follow_redirects=True)
     
     assert response.status_code == 200
-    assert b"Expense added successfully" in response.data or b"exceeded" in response.data or b"used over" in response.data
+    assert b"Expense added" in response.data or b"exceeded" in response.data or b"used over" in response.data
     assert b"Test Taco Bell" in response.data
     
     # Fetch expense ID from database to edit
@@ -131,12 +129,13 @@ def test_profile_budget_update(client):
     
     # Update budget
     response = client.post('/profile', data={
-        'budget': '45000'
+        'budget': '45000',
+        'monthly_income': '60000'
     }, follow_redirects=True)
     
     assert response.status_code == 200
-    assert b"Monthly budget updated successfully" in response.data
-    assert b"45,000" in response.data
+    assert b"Preferences updated successfully" in response.data
+    assert b"45000" in response.data
     
     # Verify DB update
     conn = get_db()

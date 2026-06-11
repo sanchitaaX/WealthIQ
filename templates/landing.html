@@ -8,10 +8,10 @@
 
 <!-- Landing Navigation -->
 <nav class="landing-nav d-flex justify-content-between align-items-center">
-    <a href="{{ url_for('landing') }}" class="landing-brand text-decoration-none">
+    <a href="{{ url_for('landing') }}" class="landing-brand text-decoration-none scroll-reveal">
         <i class="fa-solid fa-chart-line me-2"></i>WealthIQ
     </a>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 scroll-reveal" data-delay="1">
         <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm px-3">Sign in</a>
         <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm px-3">Get started</a>
     </div>
@@ -22,19 +22,19 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="d-inline-flex align-items-center gap-2 mb-4 px-3 py-2 rounded-pill" style="background: var(--primary-subtle); border: 1px solid var(--primary-muted);">
+                <div class="d-inline-flex align-items-center gap-2 mb-4 px-3 py-2 rounded-pill scroll-reveal" style="background: var(--primary-subtle); border: 1px solid var(--primary-muted);">
                     <i class="fa-solid fa-sparkles text-primary" style="font-size: 0.8rem;"></i>
                     <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">Smart Personal Finance</span>
                 </div>
-                <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 20px;">
+                <h1 class="scroll-reveal" data-delay="1" style="font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 20px;">
                     Understand your<br>
                     <span class="text-primary">money.</span> Build<br>
                     better habits.
                 </h1>
-                <p style="font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 32px; max-width: 440px;">
+                <p class="scroll-reveal" data-delay="2" style="font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 32px; max-width: 440px;">
                     Track expenses, analyze spending patterns, earn rewards for good habits, and take control of your financial future.
                 </p>
-                <div class="d-flex gap-3 flex-wrap">
+                <div class="d-flex gap-3 flex-wrap scroll-reveal" data-delay="3">
                     <a href="{{ url_for('register') }}" class="btn btn-primary px-4 py-2" style="font-size: 0.95rem;">
                         Start for free <i class="fa-solid fa-arrow-right ms-2"></i>
                     </a>
@@ -46,17 +46,20 @@
             
             <div class="col-lg-6">
                 <!-- Preview Card -->
-                <div class="card p-4 mx-auto" style="max-width: 420px; border-radius: var(--radius-xl); border: 1px solid var(--border);">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="card p-4 mx-auto hero-preview-card scroll-reveal" data-delay="2" style="max-width: 420px; border-radius: var(--radius-xl); border: 1px solid var(--border);">
+                    <!-- Background glow (FeatureHighlightCard effect) -->
+                    <div class="hero-preview-card-glow"></div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-1 hero-card-item">
                         <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">This Month</span>
                         <span class="level-badge" style="font-size: 0.7rem; padding: 4px 10px;">
                             <i class="fa-solid fa-heart-pulse"></i> 82/100
                         </span>
                     </div>
-                    <h3 style="font-size: 2rem; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.02em;">₹12,450</h3>
+                    <h3 class="hero-card-item" style="font-size: 2rem; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.02em;">₹12,450</h3>
                     
-                    <div class="d-flex flex-column gap-4">
-                        <div>
+                    <div class="d-flex flex-column gap-4 hero-card-item">
+                        <div class="hero-card-item">
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Bills</span>
                                 <span style="font-size: 0.82rem; font-weight: 700;">₹4,500</span>
@@ -65,7 +68,7 @@
                                 <div class="progress-bar" role="progressbar" style="width: 72%; background: var(--primary);"></div>
                             </div>
                         </div>
-                        <div>
+                        <div class="hero-card-item">
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Food</span>
                                 <span style="font-size: 0.82rem; font-weight: 700;">₹3,200</span>
@@ -74,7 +77,7 @@
                                 <div class="progress-bar" role="progressbar" style="width: 52%; background: var(--accent);"></div>
                             </div>
                         </div>
-                        <div>
+                        <div class="hero-card-item">
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Health</span>
                                 <span style="font-size: 0.82rem; font-weight: 700;">₹2,050</span>
@@ -83,7 +86,7 @@
                                 <div class="progress-bar" role="progressbar" style="width: 33%; background: var(--success);"></div>
                             </div>
                         </div>
-                        <div>
+                        <div class="hero-card-item">
                             <div class="d-flex justify-content-between mb-2">
                                 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Transport</span>
                                 <span style="font-size: 0.82rem; font-weight: 700;">₹1,800</span>
@@ -95,6 +98,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
@@ -103,59 +107,106 @@
 <section style="padding: 60px 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em;">Everything you need to manage money well</h2>
-            <p class="text-muted mt-2" style="max-width: 480px; margin: 0 auto;">Simple tools that help you understand where your money goes and how to make it go further.</p>
+            <h2 class="scroll-reveal" style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em;">Everything you need to manage money well</h2>
+            <p class="text-muted mt-2 scroll-reveal" data-delay="1" style="max-width: 480px; margin: 0 auto;">Simple tools that help you understand where your money goes and how to make it go further.</p>
         </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
-                    <div class="metric-icon mb-3" style="background: var(--primary-subtle); color: var(--primary);">
-                        <i class="fa-solid fa-bolt"></i>
+        <div class="row g-4 justify-content-center">
+            <!-- Card 1: Smart Expense Tracking -->
+            <div class="col-lg-4 col-md-6 d-flex justify-content-center scroll-reveal" data-delay="1">
+                <div class="feature-card">
+                    <div class="feature-card-bg-glow"></div>
+                    <div class="feature-card-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                        </svg>
                     </div>
-                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Log expenses instantly</h3>
-                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">Add any expense in seconds. Category, amount, date — all in one simple form.</p>
+                    <h3 class="feature-card-title">Smart Expense Tracking</h3>
+                    <p class="feature-card-description">Log every rupee effortlessly. Categorize spending in seconds and get a crystal-clear picture of where your money goes each month.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
-                    <div class="metric-icon mb-3" style="background: var(--accent-subtle); color: var(--accent);">
-                        <i class="fa-solid fa-chart-pie"></i>
+
+            <!-- Card 2: Insights & Analytics -->
+            <div class="col-lg-4 col-md-6 d-flex justify-content-center scroll-reveal" data-delay="2">
+                <div class="feature-card">
+                    <div class="feature-card-bg-glow"></div>
+                    <div class="feature-card-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
                     </div>
-                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Understand patterns</h3>
-                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">See exactly where your money goes with category breakdowns, trends, and forecasts.</p>
+                    <h3 class="feature-card-title">Insights &amp; Analytics</h3>
+                    <p class="feature-card-description">Beautiful charts reveal your spending patterns at a glance. Identify trends, spot overspending, and make smarter financial decisions.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
-                    <div class="metric-icon mb-3" style="background: var(--success-subtle); color: var(--success);">
-                        <i class="fa-solid fa-trophy"></i>
+
+            <!-- Card 3: Goals & Rewards -->
+            <div class="col-lg-4 col-md-6 d-flex justify-content-center scroll-reveal" data-delay="3">
+                <div class="feature-card">
+                    <div class="feature-card-bg-glow"></div>
+                    <div class="feature-card-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
+                        </svg>
                     </div>
-                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Earn rewards</h3>
-                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">Complete challenges, build streaks, and level up as you build better financial habits.</p>
+                    <h3 class="feature-card-title">Goals &amp; Rewards</h3>
+                    <p class="feature-card-description">Earn points for good financial habits and unlock achievements. Stay motivated with challenges that turn saving money into a game you love to win.</p>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
 <!-- CTA Section -->
 <section style="padding: 80px 0;" class="text-center">
     <div class="container" style="max-width: 560px;">
-        <h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px;">Ready to take control?</h2>
-        <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;">Join thousands who track expenses with WealthIQ. Free, private, and simple.</p>
-        <a href="{{ url_for('register') }}" class="btn btn-primary px-5 py-2" style="font-size: 0.95rem;">Create free account</a>
+        <h2 class="scroll-reveal" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px;">Ready to take control?</h2>
+        <p class="scroll-reveal" data-delay="1" style="color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;">Join thousands who track expenses with WealthIQ. Free, private, and simple.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary px-5 py-2 scroll-reveal" data-delay="2" style="font-size: 0.95rem;">Create free account</a>
     </div>
 </section>
 
 <!-- Footer -->
 <footer class="landing-footer">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-2 scroll-reveal">
             <i class="fa-solid fa-chart-line text-primary"></i>
             <span class="fw-bold" style="color: var(--text);">WealthIQ</span>
         </div>
-        <p class="mb-0" style="font-size: 0.82rem;">Understand your money. Build better habits.</p>
+        <p class="mb-0 scroll-reveal" data-delay="1" style="font-size: 0.82rem;">Understand your money. Build better habits.</p>
     </div>
 </footer>
+
+<!-- Scroll Reveal: Intersection Observer -->
+<script>
+(function () {
+  const EASING = 'cubic-bezier(0.6, -0.05, 0.01, 0.99)';
+  const DELAYS = { '0': '0s', '1': '0.12s', '2': '0.24s', '3': '0.38s' };
+
+  /* Apply base hidden state via JS so elements show normally without JS */
+  document.querySelectorAll('.scroll-reveal').forEach(function (el) {
+    var delay = DELAYS[el.dataset.delay] || '0s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    el.style.transition =
+      'opacity 0.65s ' + EASING + ' ' + delay + ', ' +
+      'transform 0.65s ' + EASING + ' ' + delay;
+  });
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target); /* animate once */
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.scroll-reveal').forEach(function (el) {
+    observer.observe(el);
+  });
+})();
+</script>
 
 {% endblock %}
