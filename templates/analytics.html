@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — WealthIQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-end mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">Advanced Analytics</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Deep dive into your financial habits and trends.</p>
+        </div>
+    </div>
+
+    <!-- Financial Health Summary -->
+    <div class="card p-4 mb-4 border-0 shadow-sm" style="background: var(--surface);">
+        <div class="row align-items-center g-4">
+            <div class="col-md-3 text-center">
+                <div class="health-score-ring mx-auto" style="--score: {{ health.total }};">
+                    <div class="health-score-inner">
+                        <h2 class="fw-bold text-primary mb-0" style="font-size: 2.25rem; letter-spacing: -0.03em;">{{ health.total }}</h2>
+                        <span class="text-muted" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Score</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <h4 class="fw-bold mb-2" style="font-size: 1.25rem;">Financial Health Breakdown</h4>
+                <p class="text-muted mb-4" style="font-size: 0.9rem;">Your score is evaluated dynamically based on your budget discipline, savings rate, and spending consistency over time.</p>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text);">Budget Discipline</span>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">{{ health.budget_discipline }}/25</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ (health.budget_discipline/25)*100 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text);">Savings Rate</span>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: var(--accent);">{{ health.savings_percentage }}/25</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-accent" role="progressbar" style="width: {{ (health.savings_percentage/25)*100 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3" style="background: var(--bg-alt); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                    <h6 class="fw-bold mb-2" style="font-size: 0.85rem;">Recommendations</h6>
+                    <div id="health-suggestions" class="d-flex flex-column gap-2" style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <!-- Populated by JS -->
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card p-4 h-100">
+                <h5 class="section-title">Monthly Spending Trend</h5>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card p-4 h-100">
+                <h5 class="section-title">Expenses by Category</h5>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card p-4">
+                <h5 class="section-title">Weekly Comparison</h5>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: -10px; margin-bottom: 20px;">This Week vs Last Week</p>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="weeklyComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Forecast (Simulated) -->
+    <div class="card border-0 shadow-sm rounded-4" style="background: var(--primary-subtle); border: 1px solid var(--primary-muted) !important;">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-primary mb-4 d-flex align-items-center">
+                <i class="fa-solid fa-sparkles me-2"></i> WealthIQ Smart Forecast
+            </h5>
+            <div class="row g-4" id="forecast-container">
+                <!-- Populated by JS -->
+                <div class="col-12 text-center py-4 text-primary">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    Analyzing historical patterns...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

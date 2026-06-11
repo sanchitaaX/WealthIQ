@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — WealthIQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-end mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">Account Profile</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Manage your preferences and financial targets.</p>
+        </div>
+    </div>
+
+    <!-- Profile Details Card -->
+    <div class="card p-4 mb-4 border-0 shadow-sm" style="background: var(--surface);">
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-center me-4" style="width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; font-size: 2rem; font-weight: 700; box-shadow: var(--shadow-sm);">
+                {{ g.user.name[0].upper() }}
+            </div>
+            <div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em;">{{ g.user.name }}</h3>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">{{ g.user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Account Stats Card -->
+        <div class="col-lg-4">
+            <div class="card p-4 h-100">
+                <h5 class="section-title">Lifetime Summary</h5>
+                <div class="d-flex flex-column gap-3 mt-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: var(--border-subtle) !important;">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Total Amount Logged</span>
+                        <span class="text-primary fw-bold" style="font-size: 1rem;">₹{{ "{:,.2f}".format(total_spent) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: var(--border-subtle) !important;">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Total Transactions</span>
+                        <span class="fw-bold text-dark" style="font-size: 1rem;">{{ total_transactions }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Top Category</span>
+                        <span class="fw-bold text-dark" style="font-size: 1rem;">{{ top_category }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gamification Stats Card -->
+        <div class="col-lg-4">
+            <div class="card p-4 h-100">
+                <h5 class="section-title">Progress Stats</h5>
+                <div class="d-flex flex-column gap-3 mt-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: var(--border-subtle) !important;">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Current Rank</span>
+                        <span class="text-accent fw-bold" style="font-size: 1rem;">{{ points_data.current_level }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3" style="border-color: var(--border-subtle) !important;">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Total Points</span>
+                        <span class="fw-bold text-dark" style="font-size: 1rem;">{{ points_data.total_points }} XP</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">Current Streak</span>
+                        <span class="fw-bold text-dark" style="font-size: 1rem;">{{ points_data.current_streak }} 🔥</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Control Card -->
+        <div class="col-lg-4">
+            <div class="card p-4 h-100 border-0" style="background: var(--bg-alt);">
+                <h5 class="section-title">Financial Targets</h5>
+                <p class="text-muted mb-4" style="font-size: 0.8rem; line-height: 1.4;">Configure your baseline metrics to power the smart insights on your dashboard.</p>
+                
+                {% if error %}
+                <div class="alert alert-danger py-2 px-3 mb-3" style="font-size: 0.8rem; border-radius: var(--radius-sm);">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="mb-3">
+                        <label for="monthly_income" class="form-label">Monthly Income (₹)</label>
+                        <input type="number" step="1" min="0" id="monthly_income" name="monthly_income" 
+                               class="form-control" style="background: var(--surface);" value="{{ g.user.monthly_income or 50000 }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="budget" class="form-label">Monthly Spending Limit (₹)</label>
+                        <input type="number" step="1" min="0" id="budget" name="budget" 
+                               class="form-control" style="background: var(--surface);" value="{{ g.user.budget }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">Save Targets</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

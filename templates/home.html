@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — WealthIQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-end mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">Welcome back, {{ g.user.name.split(' ')[0] }}!</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Here's your financial summary for this month.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_expense') }}" class="btn btn-primary">
+                <i class="fa-solid fa-plus me-2"></i>New Transaction
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="metric-icon me-3" style="background: var(--primary-subtle); color: var(--primary);">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Monthly Income</span>
+                    </div>
+                </div>
+                <h4 class="metric-value">₹{{ "{:,.2f}".format(income) }}</h4>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="metric-icon me-3" style="background: var(--danger-subtle); color: var(--danger);">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Spent This Month</span>
+                    </div>
+                </div>
+                <h4 class="metric-value">₹{{ "{:,.2f}".format(month_spent) }}</h4>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="metric-icon me-3" style="background: var(--success-subtle); color: var(--success);">
+                        <i class="fa-solid fa-piggy-bank"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Total Savings</span>
+                    </div>
+                </div>
+                <h4 class="metric-value">₹{{ "{:,.2f}".format(savings) }}</h4>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="metric-card" style="background: var(--bg-alt); border-color: var(--border-subtle);">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="metric-icon me-3" style="background: var(--surface); color: var(--primary); border: 1px solid var(--border);">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label text-muted">Health Score</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-baseline gap-2">
+                    <h4 class="metric-value text-primary mb-0">{{ health_score }}</h4>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/100</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Grid -->
+    <div class="row g-4">
+        <!-- Quick Analytics -->
+        <div class="col-lg-7">
+            <div class="card h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="section-title mb-0">Top Categories</h5>
+                    <a href="{{ url_for('analytics') }}" class="btn btn-outline-primary" style="padding: 4px 12px; font-size: 0.75rem;">Full Analytics</a>
+                </div>
+                <div style="position: relative; height: 280px; width: 100%;">
+                    <canvas id="homeCategoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="row g-4">
+                <!-- Gamification Widget -->
+                <div class="col-12">
+                    <div class="card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="section-title mb-0">Habit Progress</h5>
+                            <a href="{{ url_for('rewards') }}" class="text-primary" style="font-size: 0.8rem; font-weight: 600;">View Rewards &rarr;</a>
+                        </div>
+                        
+                        <div class="d-flex align-items-center p-3 mb-3" style="background: var(--bg-alt); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                            <div class="d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1.5rem;">
+                                🔥
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">{{ current_streak }} Day Streak</h6>
+                                <p class="text-muted small mb-0" style="line-height: 1.2;">Keep logging to earn more XP!</p>
+                            </div>
+                        </div>
+                        
+                        {% if recent_achievements %}
+                        <div>
+                            <span class="section-subtitle">Recent Badges</span>
+                            <div class="d-flex gap-2 flex-wrap mt-2">
+                                {% for ach in recent_achievements %}
+                                <div class="d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; box-shadow: var(--shadow-xs);" title="{{ ach.name }}">
+                                    {{ ach.icon }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Active Challenges -->
+                <div class="col-12">
+                    <div class="card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="section-title mb-0">Active Challenges</h5>
+                            <a href="{{ url_for('challenges') }}" class="text-primary" style="font-size: 0.8rem; font-weight: 600;">Manage &rarr;</a>
+                        </div>
+                        
+                        {% if active_challenges %}
+                        <div class="d-flex flex-column gap-2">
+                            {% for ch in active_challenges[:2] %}
+                            <div class="d-flex align-items-center p-3" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: all var(--dur) var(--ease);">
+                                <span class="me-3" style="font-size: 1.25rem;">{{ ch.icon }}</span>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold" style="font-size: 0.85rem;">{{ ch.name }}</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-accent fw-bold" style="font-size: 0.75rem;">+{{ ch.points_reward }} XP</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state" style="padding: 24px 16px;">
+                            <div class="empty-state-icon" style="font-size: 1.5rem; margin-bottom: 8px;"><i class="fa-solid fa-bullseye"></i></div>
+                            <p style="margin-bottom: 12px; font-size: 0.85rem;">No active challenges.</p>
+                            <a href="{{ url_for('challenges') }}" class="btn btn-outline-primary btn-sm">Find a Challenge</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const categoryDataRaw = {{ category_data | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

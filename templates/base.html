@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WealthIQ — Understand your money. Build better habits.">
+    <title>{% block title %}WealthIQ{% endblock %}</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    {% if g.user and request.endpoint not in ['landing', 'login', 'register'] %}
+    <div class="wrapper">
+        <!-- Mobile Top Bar -->
+        <div class="mobile-topbar">
+            <a href="{{ url_for('home') }}" class="sidebar-brand">
+                <i class="fa-solid fa-chart-line"></i>
+                WealthIQ
+            </a>
+            <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('home') }}" class="sidebar-brand">
+                    <i class="fa-solid fa-chart-line"></i>
+                    WealthIQ
+                </a>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('home') }}" class="sidebar-link {% if request.endpoint == 'home' %}active{% endif %}" id="nav-home">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}" id="nav-log">
+                    <i class="fa-solid fa-receipt"></i> Transactions
+                </a>
+                <a href="{{ url_for('analytics') }}" class="sidebar-link {% if request.endpoint == 'analytics' %}active{% endif %}" id="nav-analytics">
+                    <i class="fa-solid fa-chart-pie"></i> Analytics
+                </a>
+                <a href="{{ url_for('challenges') }}" class="sidebar-link {% if request.endpoint == 'challenges' %}active{% endif %}" id="nav-challenges">
+                    <i class="fa-solid fa-bullseye"></i> Challenges
+                </a>
+                <a href="{{ url_for('rewards') }}" class="sidebar-link {% if request.endpoint == 'rewards' %}active{% endif %}" id="nav-rewards">
+                    <i class="fa-solid fa-trophy"></i> Rewards
+                </a>
+                <a href="{{ url_for('profile') }}" class="sidebar-link {% if request.endpoint == 'profile' %}active{% endif %}" id="nav-profile">
+                    <i class="fa-solid fa-user-circle"></i> Profile
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <span class="sidebar-user">Signed in as {{ g.user.name.split(' ')[0] }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger w-100 btn-sm rounded-2">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Sign out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-container">
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% else %}
+        <!-- No Sidebar Layout (Landing, Login, Register) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block no_sidebar_content %}
+        {% endblock %}
+    {% endif %}
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

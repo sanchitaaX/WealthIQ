@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}WealthIQ — Understand Your Money{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block no_sidebar_content %}
+
+<!-- Landing Navigation -->
+<nav class="landing-nav d-flex justify-content-between align-items-center">
+    <a href="{{ url_for('landing') }}" class="landing-brand text-decoration-none">
+        <i class="fa-solid fa-chart-line me-2"></i>WealthIQ
+    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm px-3">Sign in</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm px-3">Get started</a>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section style="padding: 80px 0 60px;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="d-inline-flex align-items-center gap-2 mb-4 px-3 py-2 rounded-pill" style="background: var(--primary-subtle); border: 1px solid var(--primary-muted);">
+                    <i class="fa-solid fa-sparkles text-primary" style="font-size: 0.8rem;"></i>
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">Smart Personal Finance</span>
+                </div>
+                <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 20px;">
+                    Understand your<br>
+                    <span class="text-primary">money.</span> Build<br>
+                    better habits.
+                </h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 32px; max-width: 440px;">
+                    Track expenses, analyze spending patterns, earn rewards for good habits, and take control of your financial future.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary px-4 py-2" style="font-size: 0.95rem;">
+                        Start for free <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary px-4 py-2" style="font-size: 0.95rem;">
+                        Sign in
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <!-- Preview Card -->
+                <div class="card p-4 mx-auto" style="max-width: 420px; border-radius: var(--radius-xl); border: 1px solid var(--border);">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">This Month</span>
+                        <span class="level-badge" style="font-size: 0.7rem; padding: 4px 10px;">
+                            <i class="fa-solid fa-heart-pulse"></i> 82/100
+                        </span>
+                    </div>
+                    <h3 style="font-size: 2rem; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.02em;">₹12,450</h3>
+                    
+                    <div class="d-flex flex-column gap-4">
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Bills</span>
+                                <span style="font-size: 0.82rem; font-weight: 700;">₹4,500</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 72%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Food</span>
+                                <span style="font-size: 0.82rem; font-weight: 700;">₹3,200</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 52%; background: var(--accent);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Health</span>
+                                <span style="font-size: 0.82rem; font-weight: 700;">₹2,050</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 33%; background: var(--success);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Transport</span>
+                                <span style="font-size: 0.82rem; font-weight: 700;">₹1,800</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar" style="width: 28%; background: var(--text-muted);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section style="padding: 60px 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em;">Everything you need to manage money well</h2>
+            <p class="text-muted mt-2" style="max-width: 480px; margin: 0 auto;">Simple tools that help you understand where your money goes and how to make it go further.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
+                    <div class="metric-icon mb-3" style="background: var(--primary-subtle); color: var(--primary);">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Log expenses instantly</h3>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">Add any expense in seconds. Category, amount, date — all in one simple form.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
+                    <div class="metric-icon mb-3" style="background: var(--accent-subtle); color: var(--accent);">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Understand patterns</h3>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">See exactly where your money goes with category breakdowns, trends, and forecasts.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 border-0" style="background: var(--bg);">
+                    <div class="metric-icon mb-3" style="background: var(--success-subtle); color: var(--success);">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Earn rewards</h3>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.6;">Complete challenges, build streaks, and level up as you build better financial habits.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section style="padding: 80px 0;" class="text-center">
+    <div class="container" style="max-width: 560px;">
+        <h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px;">Ready to take control?</h2>
+        <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 28px;">Join thousands who track expenses with WealthIQ. Free, private, and simple.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary px-5 py-2" style="font-size: 0.95rem;">Create free account</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="landing-footer">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+            <i class="fa-solid fa-chart-line text-primary"></i>
+            <span class="fw-bold" style="color: var(--text);">WealthIQ</span>
+        </div>
+        <p class="mb-0" style="font-size: 0.82rem;">Understand your money. Build better habits.</p>
+    </div>
+</footer>
+
+{% endblock %}

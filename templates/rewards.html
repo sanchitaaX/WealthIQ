@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Rewards — WealthIQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-end mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1" style="font-size: 1.5rem; letter-spacing: -0.02em;">Rewards & Achievements</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Your financial journey progress and unlocked badges.</p>
+        </div>
+    </div>
+
+    <!-- User Level Widget -->
+    <div class="card p-5 mb-5 text-center border-0" style="background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm);">
+        <div class="d-inline-flex align-items-center justify-content-center mb-4 mx-auto" style="width: 80px; height: 80px; background: var(--primary-subtle); border-radius: 50%; color: var(--primary); font-size: 2rem;">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        
+        <h2 style="font-size: 2.25rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px;">{{ current_level }}</h2>
+        <p class="text-primary fw-bold" style="font-size: 1.1rem; margin-bottom: 32px;">{{ total_points }} XP</p>
+        
+        <div class="mx-auto" style="max-width: 600px;">
+            <div class="d-flex justify-content-between align-items-end mb-2 px-1">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">{{ current_threshold }} XP</span>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Next Level: {{ next_threshold }} XP</span>
+            </div>
+            <div class="progress" style="height: 10px; background: var(--bg-alt);">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ level_progress }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Grid -->
+    <section>
+        <h5 class="section-title mb-4">Your Badges Collection</h5>
+        <div class="row g-4">
+            {% for ach in achievements %}
+            <div class="col-md-6 col-xl-4">
+                <div class="achievement-card {% if not ach.earned %}locked{% endif %}">
+                    <div class="ach-icon-circle">
+                        {{ ach.icon }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 4px;">{{ ach.name }}</h3>
+                        <p class="text-muted" style="font-size: 0.85rem; line-height: 1.4; margin-bottom: 12px;">{{ ach.description }}</p>
+                        
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="level-badge px-2 py-1" style="font-size: 0.7rem; {% if not ach.earned %}background: var(--bg-alt); border-color: var(--border); color: var(--text-muted);{% endif %}">
+                                +{{ ach.points_reward }} XP
+                            </span>
+                            {% if ach.earned %}
+                            <span class="text-success" style="font-size: 0.75rem; font-weight: 600;">
+                                <i class="fa-solid fa-check me-1"></i> Earned {{ ach.earned_at.split(' ')[0] }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted" style="font-size: 0.75rem; font-weight: 500;">
+                                <i class="fa-solid fa-lock me-1"></i> Locked
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}
