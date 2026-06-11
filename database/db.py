@@ -1,154 +1,207 @@
-import sqlite3
 import os
+import sqlite3 # used for local fallback exceptions if needed
+try:
+    import libsql_client
+except ImportError:
+    libsql_client = None
+
 from werkzeug.security import generate_password_hash
 
-def get_db_path():
-    """Returns the path to the SQLite database file.
-    
-    Uses ~/.spendly/spendly.db by default to avoid write-permission issues
-    when the project lives under a Windows junction (e.g. C:\\Windows\\Documents).
-    Can be overridden via the SPENDLY_DB_PATH environment variable.
-    """
-    if "SPENDLY_DB_PATH" in os.environ:
-        return os.environ["SPENDLY_DB_PATH"]
-    db_dir = os.path.join(os.path.expanduser("~"), ".spendly")
-    os.makedirs(db_dir, exist_ok=True)
-    return os.path.join(db_dir, "spendly.db")
+class LibsqlRow:
+    def __init__(self, cols, vals):
+        self._cols = cols
+        self._vals = vals
+        self._dict = {col: val for col, val in zip(cols, vals)}
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._vals[key]
+        return self._dict[key]
+
+    def keys(self):
+        return self._cols
+
+    def __iter__(self):
+        return iter(self._cols)
+
+class CursorWrapper:
+    def __init__(self, result_set=None, client=None):
+        self.result_set = result_set
+        self.client = client
+        self._index = 0
+        if result_set:
+            self._rows = [LibsqlRow(result_set.columns, row) for row in result_set.rows]
+            self.lastrowid = getattr(result_set, 'last_insert_rowid', None)
+        else:
+            self._rows = []
+            self.lastrowid = None
+
+    def execute(self, sql, params=()):
+        if self.client:
+            rs = self.client.execute(sql, list(params))
+            return CursorWrapper(rs, self.client)
+        return self
+
+    def fetchone(self):
+        if self._index < len(self._rows):
+            row = self._rows[self._index]
+            self._index += 1
+            return row
+        return None
+
+    def fetchall(self):
+        return self._rows
+
+class ConnectionWrapper:
+    def __init__(self, client):
+        self.client = client
+
+    def execute(self, sql, params=()):
+        rs = self.client.execute(sql, list(params))
+        return CursorWrapper(rs, self.client)
+
+    def cursor(self):
+        return CursorWrapper(client=self.client)
+
+    def commit(self):
+        pass # libsql_client auto-commits HTTP requests
+
+    def close(self):
+        self.client.close()
 
 def get_db():
-    """Returns a SQLite connection with row_factory and foreign keys enabled."""
-    conn = sqlite3.connect(get_db_path())
-    conn.execute("PRAGMA foreign_keys = ON")
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Returns a connection to the Turso database or local SQLite using libsql-client."""
+    db_url = os.environ.get("TURSO_DATABASE_URL")
+    auth_token = os.environ.get("TURSO_AUTH_TOKEN")
+    
+    if db_url and auth_token:
+        # Remote Turso DB (Force HTTP connection to avoid WebSocket handshake errors on Vercel/some networks)
+        if db_url.startswith("libsql://"):
+            db_url = db_url.replace("libsql://", "https://", 1)
+        client = libsql_client.create_client_sync(db_url, auth_token=auth_token)
+    else:
+        # Fallback to local file using libsql_client if installed
+        db_dir = os.path.join(os.path.expanduser("~"), ".spendly")
+        os.makedirs(db_dir, exist_ok=True)
+        db_path = os.path.join(db_dir, "spendly.db")
+        # Ensure path uses forward slashes or correct URI format for file scheme
+        uri_path = db_path.replace('\\', '/')
+        client = libsql_client.create_client_sync(f"file:{uri_path}")
+    
+    return ConnectionWrapper(client)
 
 def init_db():
     """Creates all tables using CREATE TABLE IF NOT EXISTS."""
     conn = get_db()
-    cursor = conn.cursor()
     
-    # Create users table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        budget REAL DEFAULT 20000.0
-    )
-    """)
+    # Execute each statement separately
+    statements = [
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            budget REAL DEFAULT 20000.0,
+            monthly_income REAL DEFAULT 50000.0
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS user_points (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+            total_points INTEGER DEFAULT 0,
+            current_level TEXT DEFAULT 'Beginner Saver',
+            current_streak INTEGER DEFAULT 0,
+            longest_streak INTEGER DEFAULT 0,
+            last_activity_date TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS achievements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            description TEXT,
+            icon TEXT,
+            points_reward INTEGER DEFAULT 0,
+            requirement_type TEXT,
+            requirement_value INTEGER DEFAULT 0
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS user_achievements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            achievement_id INTEGER NOT NULL,
+            earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY(achievement_id) REFERENCES achievements(id),
+            UNIQUE(user_id, achievement_id)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS challenges (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            icon TEXT,
+            challenge_type TEXT,
+            target_value REAL,
+            target_category TEXT,
+            duration_days INTEGER DEFAULT 7,
+            points_reward INTEGER DEFAULT 100
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS user_challenges (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            challenge_id INTEGER NOT NULL,
+            status TEXT DEFAULT 'active',
+            started_at TEXT NOT NULL,
+            ends_at TEXT NOT NULL,
+            completed_at TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY(challenge_id) REFERENCES challenges(id)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at TEXT NOT NULL,
+            used INTEGER DEFAULT 0,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """
+    ]
     
-    # Create expenses table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS expenses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        amount REAL NOT NULL,
-        category TEXT NOT NULL,
-        date TEXT NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-    """)
-
-    # Create gamification and challenge tables
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS user_points (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL UNIQUE,
-        total_points INTEGER DEFAULT 0,
-        current_level TEXT DEFAULT 'Beginner Saver',
-        current_streak INTEGER DEFAULT 0,
-        longest_streak INTEGER DEFAULT 0,
-        last_activity_date TEXT,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS achievements (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT,
-        icon TEXT,
-        points_reward INTEGER DEFAULT 0,
-        requirement_type TEXT,
-        requirement_value INTEGER DEFAULT 0
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS user_achievements (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        achievement_id INTEGER NOT NULL,
-        earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY(achievement_id) REFERENCES achievements(id),
-        UNIQUE(user_id, achievement_id)
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS challenges (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        description TEXT,
-        icon TEXT,
-        challenge_type TEXT,
-        target_value REAL,
-        target_category TEXT,
-        duration_days INTEGER DEFAULT 7,
-        points_reward INTEGER DEFAULT 100
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS user_challenges (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        challenge_id INTEGER NOT NULL,
-        status TEXT DEFAULT 'active',
-        started_at TEXT NOT NULL,
-        ends_at TEXT NOT NULL,
-        completed_at TEXT,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY(challenge_id) REFERENCES challenges(id)
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS password_reset_tokens (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        token TEXT NOT NULL UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expires_at TEXT NOT NULL,
-        used INTEGER DEFAULT 0,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-    """)
-
-    conn.commit()
+    for stmt in statements:
+        conn.execute(stmt)
+        
     conn.close()
 
 def migrate_db():
-    """Applies database migrations like adding new columns."""
-    conn = get_db()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN monthly_income REAL DEFAULT 50000.0")
-        conn.commit()
-    except Exception:
-        pass  # Column already exists or error
-    finally:
-        conn.close()
+    pass # Monthly income column is now part of init_db directly to avoid ALTER TABLE errors
 
 def seed_gamification():
     """Seeds predefined achievements and challenges."""
     conn = get_db()
-    cursor = conn.cursor()
 
     # Seed Achievements
     achievements = [
@@ -161,11 +214,11 @@ def seed_gamification():
 
     for ach in achievements:
         try:
-            cursor.execute(
+            conn.execute(
                 "INSERT INTO achievements (name, description, icon, points_reward, requirement_type, requirement_value) VALUES (?, ?, ?, ?, ?, ?)",
                 ach
             )
-        except sqlite3.IntegrityError:
+        except Exception:
             pass # Already exists
 
     # Seed Challenges
@@ -179,42 +232,39 @@ def seed_gamification():
 
     for ch in challenges:
         # Check if exists by name
-        cursor.execute("SELECT id FROM challenges WHERE name = ?", (ch[0],))
-        if not cursor.fetchone():
-            cursor.execute(
+        res = conn.execute("SELECT id FROM challenges WHERE name = ?", (ch[0],)).fetchone()
+        if not res:
+            conn.execute(
                 "INSERT INTO challenges (name, description, icon, challenge_type, target_value, target_category, duration_days, points_reward) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 ch
             )
 
-    conn.commit()
     conn.close()
 
 def seed_db():
     """Inserts sample data for development if the database is empty."""
     init_db()  # Ensure tables are created first
     conn = get_db()
-    cursor = conn.cursor()
     
     # Check if users table is empty
-    cursor.execute("SELECT COUNT(*) FROM users")
-    count = cursor.fetchone()[0]
+    count = conn.execute("SELECT COUNT(*) as c FROM users").fetchone()
     
-    if count == 0:
+    if count and count['c'] == 0:
         # Create hashed passwords
         hashed_password = generate_password_hash("password123")
         
         # Insert users
-        cursor.execute(
-            "INSERT INTO users (name, email, password, budget) VALUES (?, ?, ?, ?)",
+        res1 = conn.execute(
+            "INSERT INTO users (name, email, password, budget) VALUES (?, ?, ?, ?) RETURNING id",
             ("Nitish Kumar", "nitish@example.com", hashed_password, 25000.0)
         )
-        nitish_id = cursor.lastrowid
+        nitish_id = res1.fetchone()['id']
         
-        cursor.execute(
-            "INSERT INTO users (name, email, password, budget) VALUES (?, ?, ?, ?)",
+        res2 = conn.execute(
+            "INSERT INTO users (name, email, password, budget) VALUES (?, ?, ?, ?) RETURNING id",
             ("Demo User", "demo@example.com", hashed_password, 15000.0)
         )
-        demo_id = cursor.lastrowid
+        demo_id = res2.fetchone()['id']
         
         # Insert sample expenses for Nitish
         expenses_nitish = [
@@ -229,7 +279,7 @@ def seed_db():
         ]
         
         for amount, category, date, desc in expenses_nitish:
-            cursor.execute(
+            conn.execute(
                 "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
                 (nitish_id, amount, category, date, desc)
             )
@@ -244,18 +294,16 @@ def seed_db():
         ]
         
         for amount, category, date, desc in expenses_demo:
-            cursor.execute(
+            conn.execute(
                 "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
                 (demo_id, amount, category, date, desc)
             )
             
-        conn.commit()
         print("Database successfully seeded with sample data.")
     else:
         print("Database already contains data. Seeding skipped.")
         
     conn.close()
     
-    # Run migrations and gamification seeds
-    migrate_db()
+    # Run gamification seeds
     seed_gamification()

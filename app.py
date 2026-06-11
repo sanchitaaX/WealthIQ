@@ -8,6 +8,11 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import json, math
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import get_db, init_db, seed_db
 
