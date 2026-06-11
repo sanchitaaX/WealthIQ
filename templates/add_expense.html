@@ -2,65 +2,67 @@
 
 {% block title %}Log Transaction — WealthIQ{% endblock %}
 
-{% block body_class %}auth-bg{% endblock %}
+{% block content %}
 
-{% block no_sidebar_content %}
-
-<div class="auth-container py-5">
-    <div class="card auth-card shadow-lg border-0" style="background: var(--surface); max-width: 500px;">
-        <div class="d-flex align-items-center mb-4">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-light me-3" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                <i class="fa-solid fa-arrow-left text-muted"></i>
-            </a>
-            <div>
-                <h1 style="font-size: 1.25rem; font-weight: 700; margin: 0; letter-spacing: -0.01em;">Log Transaction</h1>
-            </div>
-        </div>
-
-        {% if error %}
-        <div class="alert alert-danger py-2 px-3 text-center mb-4" style="font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--danger-subtle); background: var(--danger-subtle); color: var(--danger);">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        <form method="POST" action="{{ url_for('add_expense') }}">
-            
-            <div class="mb-4">
-                <label for="amount" class="form-label">Amount (₹)</label>
-                <div class="position-relative">
-                    <span class="position-absolute top-50 translate-middle-y ms-3 text-muted fw-bold">₹</span>
-                    <input type="number" step="0.01" min="0.01" id="amount" name="amount"
-                           class="form-control form-control-lg ps-5" style="font-size: 1.25rem; font-weight: 600;" placeholder="0.00" required autofocus>
+<div class="container-fluid py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm border-0 p-4" style="background: var(--surface);">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-light me-3" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        <i class="fa-solid fa-arrow-left text-muted"></i>
+                    </a>
+                    <div>
+                        <h1 style="font-size: 1.25rem; font-weight: 700; margin: 0; letter-spacing: -0.01em;">Log Transaction</h1>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label for="category" class="form-label">Category</label>
-                <select id="category" name="category" class="form-select" required>
-                    <option value="" disabled selected>Select a category</option>
-                    {% for cat in categories_list %}
-                        <option value="{{ cat }}">{{ cat }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                {% if error %}
+                <div class="alert alert-danger py-2 px-3 text-center mb-4" style="font-size: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--danger-subtle); background: var(--danger-subtle); color: var(--danger);">
+                    {{ error }}
+                </div>
+                {% endif %}
 
-            <div class="mb-3">
-                <label for="date" class="form-label">Transaction Date</label>
-                <input type="date" id="date" name="date" class="form-control" 
-                       value="{{ today_str }}" required>
-            </div>
+                <form method="POST" action="{{ url_for('add_expense') }}">
+                    
+                    <div class="mb-4">
+                        <label for="amount" class="form-label">Amount (₹)</label>
+                        <div class="position-relative">
+                            <span class="position-absolute top-50 translate-middle-y ms-3 text-muted fw-bold">₹</span>
+                            <input type="number" step="0.01" min="0.01" id="amount" name="amount"
+                                   class="form-control form-control-lg ps-5" style="font-size: 1.25rem; font-weight: 600;" placeholder="0.00" required autofocus>
+                        </div>
+                    </div>
 
-            <div class="mb-4">
-                <label for="description" class="form-label">Description <span class="text-muted fw-normal">(Optional)</span></label>
-                <input type="text" id="description" name="description"
-                       class="form-control" placeholder="e.g. Weekly groceries">
-            </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="" disabled selected>Select a category</option>
+                            {% for cat in categories_list %}
+                                <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1 py-2">Add Transaction</button>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary py-2 px-4">Cancel</a>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Transaction Date</label>
+                        <input type="date" id="date" name="date" class="form-control" 
+                               value="{{ today_str }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Description <span class="text-muted fw-normal">(Optional)</span></label>
+                        <input type="text" id="description" name="description"
+                               class="form-control" placeholder="e.g. Weekly groceries">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 py-2">Add Transaction</button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary py-2 px-4">Cancel</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
