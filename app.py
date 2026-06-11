@@ -460,22 +460,14 @@ def reset_password(token):
     return render_template("reset_password.html", token=token)
 
 
+import resend
+
 def _send_reset_email(to_email, user_name, reset_link):
-    """Sends a password reset email using SMTP."""
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", 587))
-    smtp_user = os.environ.get("SMTP_USER", "")
-    smtp_pass = os.environ.get("SMTP_PASS", "")
-
-    if not smtp_user or not smtp_pass:
-        raise RuntimeError("SMTP credentials not configured. Set SMTP_USER and SMTP_PASS environment variables.")
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "WealthIQ — Reset Your Password"
-    msg["From"] = smtp_user
-    msg["To"] = to_email
-
-    text_body = f"""Hi {user_name},\n\nYou requested a password reset for your WealthIQ account.\n\nClick this link to set a new password:\n{reset_link}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.\n\n— WealthIQ Team"""
+    """Sends a password reset email using Resend."""
+    resend.api_key = os.environ.get("RESEND_API_KEY")
+    
+    if not resend.api_key:
+        raise RuntimeError("Resend API key not configured. Set RESEND_API_KEY in .env")
 
     html_body = f"""\
     <html>
@@ -493,13 +485,15 @@ def _send_reset_email(to_email, user_name, reset_link):
     </html>
     """
 
-    msg.attach(MIMEText(text_body, "plain"))
-    msg.attach(MIMEText(html_body, "html"))
-
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, to_email, msg.as_string())
+    try:
+        r = resend.Emails.send({
+            "from": "WealthIQ <onboarding@resend.dev>",
+            "to": to_email,
+            "subject": "WealthIQ — Reset Your Password",
+            "html": html_body
+        })
+    except Exception as e:
+        raise RuntimeError(f"Failed to send email via Resend: {str(e)}")
 
 # ------------------------------------------------------------------ #
 # Dashboard & Filtering                                               #
